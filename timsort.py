@@ -2,50 +2,8 @@ import time
 import random
 import tracemalloc
 
-
 # =========================================================
-# 1. BUBBLE SORT IMPLEMENTATION
-# =========================================================
-def bubble_sort_trace(arr):
-    """Küçük örnek dizilerde Bubble Sort prensibini adım adım ekrana yazdırır."""
-    a = list(arr)
-    n = len(a)
-    print(f"\n[Bubble Sort Prensibi] Başlangıç: {a}")
-    step = 1
-    for i in range(n):
-        swapped = False
-        for j in range(0, n - i - 1):
-            if a[j] > a[j + 1]:
-                a[j], a[j + 1] = a[j + 1], a[j]
-                print(f"  Adım {step:02d}: {a[j + 1]} > {a[j]} tespit edildi, yer değiştirildi -> {a}")
-                swapped = True
-                step += 1
-        if not swapped:
-            print("  Dizi sıralandı (erken çıkış / swapped=False).")
-            break
-    print(f"[Bubble Sort Sonuç]: {a}\n")
-
-
-def bubble_sort(arr):
-    """Metrik ölçümleri için performans sürümü."""
-    n = len(arr)
-    comparisons = 0
-    swaps = 0
-    for i in range(n):
-        swapped = False
-        for j in range(0, n - i - 1):
-            comparisons += 1
-            if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-                swaps += 1
-                swapped = True
-        if not swapped:
-            break
-    return arr, comparisons, swaps
-
-
-# =========================================================
-# 2. TIMSORT IMPLEMENTATION
+# TIMSORT IMPLEMENTATION
 # =========================================================
 MIN_MERGE = 32
 
@@ -121,9 +79,9 @@ def tim_sort_trace(arr):
     a = list(arr)
     n = len(a)
     print(f"\n[TimSort Prensibi] Başlangıç: {a}")
-    run_size = 4  # Küçük dizide görselleştirebilmek için min_run sembolik olarak 4 seçilir
+    run_size = 4  # Görselleştirme için küçük dizide sembolik run boyutu
 
-    # 1. Aşama: Küçük parçalara Insertion Sort uygulama
+    # 1. Aşama: Parçalara Insertion Sort
     for start in range(0, n, run_size):
         end = min(start + run_size - 1, n - 1)
         insertion_sort_slice(a, start, end)
@@ -166,9 +124,6 @@ def tim_sort(arr):
     return arr, stats["comparisons"], stats["writes"]
 
 
-# =========================================================
-# METRİK & ÇALIŞTIRICI
-# =========================================================
 def run_case_analysis(algorithm_name, sort_func, data, case_label):
     arr_copy = list(data)
     tracemalloc.start()
@@ -190,46 +145,23 @@ def run_case_analysis(algorithm_name, sort_func, data, case_label):
 
 if __name__ == "__main__":
     sample_array = [64, 34, 25, 12, 22, 11, 90]
-
-    print("=" * 55)
-    print("  SORTING ALGORITHM ANALYSIS & DEMO")
-    print("=" * 55)
-    print("1 - Bubble Sort (Örnek Dizi Üzerinde Adım Adım + Case Analizleri)")
-    print("2 - TimSort     (Örnek Dizi Üzerinde Adım Adım + Case Analizleri)")
-
-    choice = input("Seçim yapın (1 / 2): ").strip()
-
-    if choice not in ["1", "2"]:
-        print("Geçersiz seçim.")
-        exit()
-
     size = 2000
+
     best_data = list(range(size))
     worst_data = list(range(size, 0, -1))
     avg_data = [random.randint(0, 100000) for _ in range(size)]
 
-    if choice == "1":
-        print("\n" + "=" * 50)
-        print("A) KÜÇÜK ÖRNEK DİZİ ÜZERİNDE ÇALIŞMA PRENSİBİ")
-        print("=" * 50)
-        bubble_sort_trace(sample_array)
+    print("=" * 55)
+    print("  TIMSORT WORKLOAD ANALİZİ & DEMO")
+    print("=" * 55)
 
-        print("=" * 50)
-        print(f"B) CPU & MEMORY WORKLOAD ANALİZLERİ (N={size})")
-        print("=" * 50)
-        run_case_analysis("Bubble Sort", bubble_sort, best_data, "Best Case (Zaten Sıralı)")
-        run_case_analysis("Bubble Sort", bubble_sort, avg_data, "Average Case (Rastgele)")
-        run_case_analysis("Bubble Sort", bubble_sort, worst_data, "Worst Case (Tersten Sıralı)")
+    print("\nA) KÜÇÜK ÖRNEK DİZİ ÜZERİNDE ÇALIŞMA PRENSİBİ")
+    print("=" * 50)
+    tim_sort_trace(sample_array)
 
-    elif choice == "2":
-        print("\n" + "=" * 50)
-        print("A) KÜÇÜK ÖRNEK DİZİ ÜZERİNDE ÇALIŞMA PRENSİBİ")
-        print("=" * 50)
-        tim_sort_trace(sample_array)
-
-        print("=" * 50)
-        print(f"B) CPU & MEMORY WORKLOAD ANALİZLERİ (N={size})")
-        print("=" * 50)
-        run_case_analysis("TimSort", tim_sort, best_data, "Best Case (Zaten Sıralı)")
-        run_case_analysis("TimSort", tim_sort, avg_data, "Average Case (Rastgele)")
-        run_case_analysis("TimSort", tim_sort, worst_data, "Worst Case (Tersten Sıralı)")
+    print("=" * 50)
+    print(f"B) CPU & MEMORY WORKLOAD ANALİZLERİ (N={size})")
+    print("=" * 50)
+    run_case_analysis("TimSort", tim_sort, best_data, "Best Case (Zaten Sıralı)")
+    run_case_analysis("TimSort", tim_sort, avg_data, "Average Case (Rastgele)")
+    run_case_analysis("TimSort", tim_sort, worst_data, "Worst Case (Tersten Sıralı)")
